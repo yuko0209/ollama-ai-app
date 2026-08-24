@@ -89,12 +89,19 @@ docker build -t ollama-python-app .
 
 ### ステップ2：AIの実行（ラン）
 ```bash
-docker run --rm -e OLLAMA_HOST=http://docker.internal ollama-python-app
+# 自動判定でホストマシンのOllamaに繋がるため、環境変数の指定なしでそのまま動きます！
+docker run -it --rm ollama-python-app
+```
+
+また、手動で接続先を指定したい場合は以下のように環境変数 `OLLAMA_HOST` を渡すこともできます：
+```bash
+docker run -it --rm -e OLLAMA_HOST=http://host.docker.internal:11434 ollama-python-app
 ```
 
 ---
 
 ## 🎓 今回学んだエンジニアの重要知識
 * **RAGの基本**：AI自体を追加学習させなくても、プログラム側で「資料」をプロンプトに挟み込んで渡せば、独自の知識を喋らせることができる。
-* **MacのDockerの壁**：Mac의 Dockerは「見えない仮想マシン」の中で動くため、Mac本体のアプリ（Ollama）と通信させるには host.docker.internal という住所指定が必要になる。
+* **MacのDockerの壁**：MacのDockerは「見えない仮想マシン」の中で動くため、Mac本体のアプリ（Ollama）と通信させるには `host.docker.internal:11434` というホスト名とポート番号の指定が必要になる。
+* **自動環境判定の実装**：`/.dockerenv` の有無によってDocker内かローカル(Mac)かをプログラムが自律的に判断し、適切な接続先を自動セットする設計にすることで、開発者がコマンドを叩く際の手間やミスを徹底的に減らすことができる。
 * **環境変数の活用**：コードに直接URLを書き込まず、-e OLLAMA_HOST=... のように外から切り替えられるようにするのが、プロの保守性の高いコード設計。

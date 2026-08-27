@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    image: ollama-python-app
+    # 正しいポート番号とアドレスを環境変数として自動で部屋に送り込む設定
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    # キーボード入力を受け付けるための設定（-it と同じ意味）
+    stdin_open: true
+    tty: true

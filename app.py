@@ -4,13 +4,17 @@ import os
 with open("secret_info.txt", "r", encoding="utf-8") as f:
     secret_data = f.read()
 
-print("🤖 宇宙サウナAIチャットボットが起動しました！")
-print("💬 質問をどうぞ！（終了するには 'exit' と入力してください）\n")
+print("🤖 [記憶機能つき] 宇宙サウナAIが起動しました！")
+print("💬 前の会話を覚えています。終了するには 'exit' と入力してください。\n")
 
+# 【重要】Docker環境かMacローカル環境かを自動判定するプロ設計
 is_docker = os.path.exists('/.dockerenv')
 default_host = 'http://host.docker.internal:11434' if is_docker else 'http://localhost:11434'
 ollama_host = os.environ.get('OLLAMA_HOST', default_host)
 client = ollama.Client(host=ollama_host)
+
+# 過去の会話をすべて記憶しておくための箱
+chat_history = []
 
 while True:
     user_question = input("🙋 あなた: ")
@@ -33,10 +37,22 @@ while True:
 {user_question}
 """
 
-    print("🤔 AIが考えています...")
+    # ユーザーの発言を履歴に追加
+    chat_history.append({'role': 'user', 'content': prompt})
 
-    response = client.chat(model='llama3', messages=[
-        {'role': 'user', 'content': prompt}
-    ])
+    print("🤔 AIがこれまでの会話を思い出して考えています...")
 
-    print(f"\n🤖 AI: {response['message']['content']}\n")
+    try:
+        # 会話履歴を丸ごとAIに渡す
+        response = client.chat(model='llama3', messages=chat_history)
+        ai_reply = response['message']['content']
+
+        print(f"\n🤖 AI: {ai_reply}\n")
+
+        # AIの返答も履歴に追加
+        chat_history.append({'role': 'assistant', 'content': ai_reply})
+        
+    except Exception as e:
+        print(f"\n❌ エラーが発生しました: {e}")
+        print("Mac本体のOllamaアプリが起動しているか確認してください。\n")
+        break

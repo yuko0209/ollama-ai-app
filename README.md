@@ -105,3 +105,11 @@ docker run -it --rm -e OLLAMA_HOST=http://host.docker.internal:11434 ollama-pyth
 * **MacのDockerの壁**：MacのDockerは「見えない仮想マシン」の中で動くため、Mac本体のアプリ（Ollama）と通信させるには `host.docker.internal:11434` というホスト名とポート番号の指定が必要になる。
 * **自動環境判定の実装**：`/.dockerenv` の有無によってDocker内かローカル(Mac)かをプログラムが自律的に判断し、適切な接続先を自動セットする設計にすることで、開発者がコマンドを叩く際の手間やミスを徹底的に減らすことができる。
 * **環境変数の活用**：コードに直接URLを書き込まず、-e OLLAMA_HOST=... のように外から切り替えられるようにするのが、プロの保守性の高いコード設計。
+
+---
+
+## ⚡ 起動コマンド（二度と間違えない決定版）
+```bash
+docker compose build
+docker compose run --rm app
+```
